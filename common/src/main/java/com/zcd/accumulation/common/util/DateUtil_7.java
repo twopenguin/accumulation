@@ -4,7 +4,7 @@ import java.util.*;
 
 public class DateUtil_7 {
     /**
-     * 获取两个时间的日期,排除了最后一天，即 endDate 所在日期
+     * 获取两个时间之间的日期,排除了最后一天，即 endDate 所在日期
      * @param startDate
      * @param endDate
      * @return
@@ -30,7 +30,7 @@ public class DateUtil_7 {
     }
 
     /**
-     * 获取这个时间当前天的最后时间
+     * 获取传入时间当前天的最后时间
      * @param date
      * @return
      */
@@ -62,6 +62,23 @@ public class DateUtil_7 {
     }
 
     /**
+     * 获取指定时间月最后一天
+     * @param date
+     * @return
+     */
+    public static Date getCurrentEndMonthByTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        //设置日期为本月最大日期
+        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    /**
      * 判断两个时间是否为同一天
      * @param date1
      * @param date2
@@ -83,5 +100,36 @@ public class DateUtil_7 {
                 .get(Calendar.DAY_OF_MONTH);
 
         return isSameDate;
+    }
+
+    /**
+     * 获取传入的时间是周几
+     * @return
+     */
+    public static int getDayOfWeek(Date dt) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
+        if (w < 0)
+            w = 0;
+        return w == 0 ? 7 : w;
+    }
+
+    /**
+     * 获取传入时间所在月的最后一个工作
+     *
+     * @return
+     */
+    public static Date getLastWorkDayOfThisMonth(Date date) {
+        Date currentEndMonthByTime = getCurrentEndMonthByTime(date);
+        int dayOfWeek = getDayOfWeek(currentEndMonthByTime);
+
+        if (dayOfWeek >= 6) {
+            final long newTime = currentEndMonthByTime.getTime() - (dayOfWeek - 5) * 24 * 60 * 60 * 1000;
+            Date result = new Date();
+            result.setTime(newTime);
+            return result;
+        }
+        return currentEndMonthByTime;
     }
 }
